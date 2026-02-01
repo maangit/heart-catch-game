@@ -102,7 +102,7 @@ button{
   transition:.2s;
 }
 
-/* win screen styling */
+/* win screen */
 .name{
   font-size:34px;
   font-weight:bold;
@@ -135,7 +135,10 @@ button{
 <!-- START -->
 <div id="start" class="screen active">
   <h2>Hey Himani 💕</h2>
-  <p style="margin-top:10px;">I made this little game just for you.<br>Catch all my hearts ❤️</p>
+  <p style="margin-top:10px;">
+    I made this little game just for you.<br>
+    Catch all my hearts ❤️
+  </p>
   <button onclick="startGame()">Start</button>
 </div>
 
@@ -166,7 +169,8 @@ button{
 </div>
 
 <script>
-let total = 50;
+const total = 50;
+let progress = 0;
 let caught = 0;
 let missed = 0;
 let interval;
@@ -182,7 +186,11 @@ const scoreText=document.getElementById("scoreText");
 function showNotice(text){
   notice.innerText=text;
   notice.style.opacity=1;
-  setTimeout(()=>notice.style.opacity=0,1200);
+  setTimeout(()=>notice.style.opacity=0,1000);
+}
+
+function updateBar(){
+  fill.style.width=(progress/total*100)+"%";
 }
 
 function startGame(){
@@ -202,12 +210,14 @@ function spawnHeart(){
   heart.onclick=(e)=>{
     e.stopPropagation();
     heart.remove();
+
+    progress++;
     caught++;
 
-    fill.style.width=(caught/total*100)+"%";
     sparkle(e.clientX,e.clientY);
+    updateBar();
 
-    if(caught>=total) finishGame();
+    if(progress>=total) finishGame();
   };
 
   area.appendChild(heart);
@@ -215,7 +225,9 @@ function spawnHeart(){
   setTimeout(()=>{
     if(area.contains(heart)){
       heart.remove();
+      progress=Math.max(0,progress-5);
       missed++;
+      updateBar();
     }
   },1500);
 }
@@ -233,7 +245,10 @@ function sparkle(x,y){
 area.onclick=(e)=>{
   sparkle(e.clientX,e.clientY);
   showNotice("Aww you missed that one… don’t worry, keep going 💕");
-};
+  progress=Math.max(0,progress-5);
+  missed++;
+  updateBar();
+}
 
 function finishGame(){
   clearInterval(interval);
