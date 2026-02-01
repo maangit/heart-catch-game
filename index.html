@@ -88,18 +88,31 @@ button{
 
 /* progress bar */
 .bar{
-  height:12px;
+  position:relative;
+  height:18px;
   background:rgba(255,255,255,0.3);
-  border-radius:10px;
-  margin:15px 0;
+  border-radius:12px;
+  margin:20px 0;
+  overflow:hidden;
 }
 
 .fill{
   height:100%;
   width:0%;
   background:white;
-  border-radius:10px;
-  transition:.2s;
+  border-radius:12px;
+  transition: width .25s ease;
+}
+
+.percent{
+  position:absolute;
+  width:100%;
+  text-align:center;
+  font-size:12px;
+  font-weight:bold;
+  color:#ff4f8b;
+  top:50%;
+  transform:translateY(-50%);
 }
 
 /* win screen */
@@ -148,6 +161,7 @@ button{
 
   <div class="bar">
     <div id="fill" class="fill"></div>
+    <div id="percent" class="percent">0%</div>
   </div>
 
   <div id="gameArea"></div>
@@ -180,6 +194,7 @@ const gameScreen=document.getElementById("game");
 const endScreen=document.getElementById("end");
 const area=document.getElementById("gameArea");
 const fill=document.getElementById("fill");
+const percent=document.getElementById("percent");
 const notice=document.getElementById("notice");
 const scoreText=document.getElementById("scoreText");
 
@@ -190,7 +205,9 @@ function showNotice(text){
 }
 
 function updateBar(){
-  fill.style.width=(progress/total*100)+"%";
+  let pct=Math.round((progress/total)*100);
+  fill.style.width=pct+"%";
+  percent.innerText=pct+"%";
 }
 
 function startGame(){
@@ -209,8 +226,8 @@ function spawnHeart(){
 
   heart.onclick=(e)=>{
     e.stopPropagation();
-    heart.remove();
 
+    heart.remove();
     progress++;
     caught++;
 
@@ -225,7 +242,7 @@ function spawnHeart(){
   setTimeout(()=>{
     if(area.contains(heart)){
       heart.remove();
-      progress=Math.max(0,progress-5);
+      progress=Math.max(0,progress-3); // balanced penalty
       missed++;
       updateBar();
     }
@@ -245,7 +262,7 @@ function sparkle(x,y){
 area.onclick=(e)=>{
   sparkle(e.clientX,e.clientY);
   showNotice("Aww you missed that one… don’t worry, keep going 💕");
-  progress=Math.max(0,progress-5);
+  progress=Math.max(0,progress-3);
   missed++;
   updateBar();
 }
