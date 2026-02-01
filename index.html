@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Catch My Hearts 💖</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(135deg,#ff9acb,#ff5c9d);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.screen {
+  display: none;
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+}
+
+.active {
+  display: block;
+}
+
+/* buttons */
+button {
+  background: white;
+  color: #ff4f8b;
+  border: none;
+  padding: 14px 22px;
+  border-radius: 18px;
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+/* game */
+#gameArea {
+  position: relative;
+  height: 70vh;
+}
+
+.heart {
+  position: absolute;
+  font-size: 30px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform .1s;
+}
+
+.heart:active {
+  transform: scale(1.2);
+}
+
+/* progress bar */
+.bar {
+  height: 12px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 10px;
+  margin: 15px 0;
+}
+
+.fill {
+  height: 100%;
+  width: 0%;
+  background: white;
+  border-radius: 10px;
+}
+
+/* final screen */
+.bigHeart {
+  font-size: 70px;
+  margin-bottom: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Welcome -->
+<div id="start" class="screen active">
+  <h2>Hey… I made a tiny game for you 💕</h2>
+  <p style="margin-top:10px;">Catch all my hearts</p>
+  <button onclick="startGame()">Start 💖</button>
+</div>
+
+<!-- Game -->
+<div id="game" class="screen">
+  <h3>Catch them all!</h3>
+
+  <div class="bar">
+    <div id="fill" class="fill"></div>
+  </div>
+
+  <p id="score">0 / 20</p>
+
+  <div id="gameArea"></div>
+</div>
+
+<!-- Final -->
+<div id="end" class="screen">
+  <div class="bigHeart">❤️</div>
+  <h2>
+    You caught all my hearts…<br><br>
+    so can I keep yours too? 💕
+  </h2>
+  <button onclick="location.reload()">Play again</button>
+</div>
+
+<script>
+let total = 20;
+let caught = 0;
+let interval;
+
+const startScreen = document.getElementById("start");
+const gameScreen = document.getElementById("game");
+const endScreen = document.getElementById("end");
+const area = document.getElementById("gameArea");
+const score = document.getElementById("score");
+const fill = document.getElementById("fill");
+
+function startGame() {
+  startScreen.classList.remove("active");
+  gameScreen.classList.add("active");
+
+  interval = setInterval(spawnHeart, 700);
+}
+
+function spawnHeart() {
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.textContent = "❤️";
+
+  heart.style.left = Math.random()*90 + "%";
+  heart.style.top = Math.random()*80 + "%";
+
+  heart.onclick = () => {
+    heart.remove();
+    caught++;
+
+    score.textContent = caught + " / " + total;
+    fill.style.width = (caught/total*100) + "%";
+
+    if (caught >= total) finishGame();
+  };
+
+  area.appendChild(heart);
+
+  setTimeout(()=>heart.remove(), 3000);
+}
+
+function finishGame(){
+  clearInterval(interval);
+  gameScreen.classList.remove("active");
+  endScreen.classList.add("active");
+}
+</script>
+
+</body>
+</html>
