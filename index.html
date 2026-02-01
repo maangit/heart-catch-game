@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>For Himani 💖</title>
+<title>For Himani ❤️</title>
 
 <style>
 *{
@@ -32,7 +32,7 @@ body{
 }
 .active{ display:block; }
 
-/* buttons */
+/* button */
 button{
   background:white;
   color:#ff4f8b;
@@ -43,7 +43,7 @@ button{
   margin-top:20px;
 }
 
-/* message bar */
+/* notice */
 #notice{
   position:fixed;
   top:15px;
@@ -55,10 +55,10 @@ button{
   border-radius:20px;
   font-size:14px;
   opacity:0;
-  transition:0.3s;
+  transition:.3s;
 }
 
-/* game */
+/* game area */
 #gameArea{
   position:relative;
   height:70vh;
@@ -72,21 +72,18 @@ button{
 }
 
 @keyframes popIn{
-  from{ transform:scale(0); }
-  to{ transform:scale(1); }
+  from{transform:scale(0);}
+  to{transform:scale(1);}
 }
 
 .sparkle{
   position:absolute;
   font-size:16px;
-  animation:spark 0.5s forwards;
+  animation:spark .5s forwards;
 }
 
 @keyframes spark{
-  to{
-    transform:translateY(-20px);
-    opacity:0;
-  }
+  to{transform:translateY(-20px);opacity:0;}
 }
 
 /* progress bar */
@@ -105,9 +102,28 @@ button{
   transition:.2s;
 }
 
-.bigHeart{
-  font-size:70px;
-  margin-bottom:20px;
+/* win screen styling */
+.name{
+  font-size:34px;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.win{
+  font-size:22px;
+  margin-bottom:10px;
+}
+
+.msg{
+  font-size:16px;
+  opacity:.95;
+  margin-bottom:25px;
+}
+
+.scoreBox{
+  font-size:14px;
+  margin-top:25px;
+  opacity:.9;
 }
 </style>
 </head>
@@ -116,17 +132,14 @@ button{
 
 <div id="notice"></div>
 
-<!-- Start -->
+<!-- START -->
 <div id="start" class="screen active">
-  <h2>Hey Himani… 💕</h2>
-  <p style="margin-top:10px;">
-    I made this little game just for you.<br>
-    Catch all my hearts ❤️
-  </p>
+  <h2>Hey Himani 💕</h2>
+  <p style="margin-top:10px;">I made this little game just for you.<br>Catch all my hearts ❤️</p>
   <button onclick="startGame()">Start</button>
 </div>
 
-<!-- Game -->
+<!-- GAME -->
 <div id="game" class="screen">
   <h3>Catch them all!</h3>
 
@@ -134,50 +147,52 @@ button{
     <div id="fill" class="fill"></div>
   </div>
 
-  <p id="score">0 / 50</p>
   <div id="gameArea"></div>
 </div>
 
-<!-- End -->
+<!-- END -->
 <div id="end" class="screen">
-  <div class="bigHeart">❤️</div>
-  <h2>
-    Himani… you caught all my hearts 💕<br><br>
-    so can I keep yours too?
-  </h2>
+
+  <div class="name">HIMANI 🏆❤️</div>
+  <div class="win">YOU WON 🎉</div>
+  <div class="msg">
+    looks like you caught all my hearts,<br>
+    so can I keep yours too? 💕
+  </div>
+
+  <div id="scoreText" class="scoreBox"></div>
+
   <button onclick="location.reload()">Play again</button>
 </div>
 
 <script>
 let total = 50;
 let caught = 0;
+let missed = 0;
 let interval;
 
-const startScreen = document.getElementById("start");
-const gameScreen = document.getElementById("game");
-const endScreen = document.getElementById("end");
-const area = document.getElementById("gameArea");
-const score = document.getElementById("score");
-const fill = document.getElementById("fill");
-const notice = document.getElementById("notice");
+const startScreen=document.getElementById("start");
+const gameScreen=document.getElementById("game");
+const endScreen=document.getElementById("end");
+const area=document.getElementById("gameArea");
+const fill=document.getElementById("fill");
+const notice=document.getElementById("notice");
+const scoreText=document.getElementById("scoreText");
 
-/* show cute message */
 function showNotice(text){
-  notice.innerText = text;
-  notice.style.opacity = 1;
+  notice.innerText=text;
+  notice.style.opacity=1;
   setTimeout(()=>notice.style.opacity=0,1200);
 }
 
 function startGame(){
   startScreen.classList.remove("active");
   gameScreen.classList.add("active");
-
-  interval = setInterval(spawnHeart, 600); // 30 sec gameplay
+  interval=setInterval(spawnHeart,600);
 }
 
-/* spawn hearts */
 function spawnHeart(){
-  const heart = document.createElement("div");
+  const heart=document.createElement("div");
   heart.className="heart";
   heart.textContent="❤️";
 
@@ -186,13 +201,10 @@ function spawnHeart(){
 
   heart.onclick=(e)=>{
     e.stopPropagation();
-
     heart.remove();
     caught++;
 
-    score.textContent = caught+" / "+total;
     fill.style.width=(caught/total*100)+"%";
-
     sparkle(e.clientX,e.clientY);
 
     if(caught>=total) finishGame();
@@ -200,10 +212,14 @@ function spawnHeart(){
 
   area.appendChild(heart);
 
-  setTimeout(()=>heart.remove(),1500);
+  setTimeout(()=>{
+    if(area.contains(heart)){
+      heart.remove();
+      missed++;
+    }
+  },1500);
 }
 
-/* sparkle effect */
 function sparkle(x,y){
   const s=document.createElement("div");
   s.className="sparkle";
@@ -214,15 +230,17 @@ function sparkle(x,y){
   setTimeout(()=>s.remove(),500);
 }
 
-/* miss click */
-area.onclick=()=>{
-  sparkle(event.clientX,event.clientY);
+area.onclick=(e)=>{
+  sparkle(e.clientX,e.clientY);
   showNotice("Aww you missed that one… don’t worry, keep going 💕");
 };
 
-/* finish */
 function finishGame(){
   clearInterval(interval);
+
+  scoreText.innerHTML=
+    "❤️ Caught: "+caught+"<br>💔 Missed: "+missed;
+
   gameScreen.classList.remove("active");
   endScreen.classList.add("active");
 }
@@ -230,4 +248,3 @@ function finishGame(){
 
 </body>
 </html>
-
